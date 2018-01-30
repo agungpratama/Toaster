@@ -111,7 +111,15 @@ open class Toast: Operation {
     DispatchQueue.main.async {
       self.view.setNeedsLayout()
       self.view.alpha = 0
-      ToastWindow.shared.addSubview(self.view)
+      if UIApplication.shared.isKeyboardPresented {
+            if(UIApplication.shared.windows.count > 0){
+                UIApplication.shared.windows[UIApplication.shared.windows.count - 1].addSubview(self.view)
+            }else{
+                ToastWindow.shared.addSubview(self.view)
+            }
+        }else{
+            ToastWindow.shared.addSubview(self.view)
+      }
 
       UIView.animate(
         withDuration: 0.5,
@@ -149,4 +157,14 @@ open class Toast: Operation {
     self.isFinished = true
   }
 
+}
+//IDK IF THIS UIREMOTEKEYBOARDWINDOW CAN HANDLE ALL TYPE OF THE KEYBOARDS PLS HELP
+extension UIApplication {
+    var isKeyboardPresented: Bool {
+        if let keyboardWindowClass = NSClassFromString("UIRemoteKeyboardWindow"), self.windows.contains(where: { $0.isKind(of: keyboardWindowClass) }) {
+            return true
+        } else {
+            return false
+        }
+    }
 }
